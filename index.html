@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>林依洛的魔法屋 ✨</title>
+<style>
+/* ===== 全局重置 ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow-x:hidden;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+
+/* ===== 动态霓虹背景 ===== */
+body{
+  background:#0a0420;
+  color:#fff;
+  position:relative;
+  min-height:100vh;
+}
+/* 多层渐变光斑漂浮 */
+.bg-orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.55;z-index:0;pointer-events:none}
+.orb1{width:520px;height:520px;background:#ff2d95;top:-120px;left:-80px;animation:floatOrb 18s ease-in-out infinite}
+.orb2{width:460px;height:460px;background:#00e5ff;bottom:-100px;right:-60px;animation:floatOrb 22s ease-in-out infinite reverse}
+.orb3{width:380px;height:380px;background:#9d4dff;top:40%;left:55%;animation:floatOrb 26s ease-in-out infinite}
+.orb4{width:300px;height:300px;background:#ffd000;top:65%;left:15%;animation:floatOrb 20s ease-in-out infinite reverse}
+@keyframes floatOrb{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(60px,-40px) scale(1.15)}
+  66%{transform:translate(-50px,30px) scale(.9)}
+}
+/* 星星层 */
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 3s infinite}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
+/* 顶部流光带 */
+.flowbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:20;
+  background:linear-gradient(90deg,#ff2d95,#ffd000,#00e5ff,#9d4dff,#ff2d95);
+  background-size:300% 100%;animation:flow 6s linear infinite}
+@keyframes flow{0%{background-position:0 0}100%{background-position:300% 0}}
+
+/* ===== 顶部跳动文字（澳门式颜色跳动）===== */
+.top-marquee{position:relative;z-index:5;text-align:center;padding:20px 8px 8px}
+.flicker-line{font-weight:900;letter-spacing:2px;margin:2px 0}
+.flicker-line .ch{display:inline-block;animation:flick 1.6s infinite,flickJ 1.6s infinite}
+@keyframes flick{
+  0%,100%{color:#ffd000;text-shadow:0 0 8px #ff2d95,0 0 18px #ff2d95}
+  25%{color:#ff2d95;text-shadow:0 0 8px #00e5ff,0 0 18px #00e5ff}
+  50%{color:#00e5ff;text-shadow:0 0 8px #ffd000,0 0 18px #ffd000}
+  75%{color:#9d4dff;text-shadow:0 0 8px #ff2d95,0 0 18px #ff2d95}
+}
+@keyframes flickJ{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+/* 字符错开节奏 */
+.flicker-line .ch:nth-child(2n){animation-delay:.2s}
+.flicker-line .ch:nth-child(3n){animation-delay:.4s}
+.flicker-line .ch:nth-child(4n){animation-delay:.6s}
+
+/* ===== 上下浮动邀请文字（每10秒一轮）===== */
+.invite{position:relative;z-index:5;text-align:center;margin:6px auto;max-width:760px}
+.invite p{font-size:17px;font-weight:700;padding:8px 14px;border-radius:999px;display:inline-block;
+  background:rgba(255,45,149,.18);border:1px solid rgba(255,255,255,.15);
+  animation:breath 10s ease-in-out infinite}
+@keyframes breath{
+  0%,100%{transform:translateY(0);background:rgba(255,45,149,.18);color:#ffd000}
+  50%{transform:translateY(-14px);background:rgba(0,229,255,.22);color:#fff;text-shadow:0 0 12px #00e5ff}
+}
+
+/* ===== 主内容容器 ===== */
+.wrap{position:relative;z-index:5;max-width:1100px;margin:0 auto;padding:10px 14px 140px}
+
+/* ===== 通用按钮 ===== */
+.btn{cursor:pointer;border:none;outline:none;font-weight:800;font-family:inherit;
+  padding:12px 26px;border-radius:999px;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#ff2d95,#9d4dff);box-shadow:0 6px 20px rgba(255,45,149,.4);
+  transition:transform .15s}
+.btn:hover{transform:translateY(-2px) scale(1.04)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn.gold{background:linear-gradient(135deg,#ffd000,#ff7a00);box-shadow:0 6px 20px rgba(255,208,0,.4)}
+.btn.cyan{background:linear-gradient(135deg,#00e5ff,#0072ff);box-shadow:0 6px 20px rgba(0,229,255,.4)}
+.btn .sh{position:absolute;top:0;left:-150%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:skewX(-25deg);animation:shine 3s infinite}
+@keyframes shine{0%{left:-150%}60%,100%{left:150%}}
+
+/* ===== 顶部操作区 ===== */
+.topbar{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:14px 0}
+
+/* ===== 图片网格（乱跳区）===== */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin:18px 0}
+.card{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;
+  border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);
+  animation:cardJump 6s ease-in-out infinite}
+@keyframes cardJump{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(1deg)}}
+.card img{width:100%;height:230px;object-fit:cover;display:block;transition:transform .4s}
+.card:hover img{transform:scale(1.08)}
+.card .tag{position:absolute;bottom:0;left:0;right:0;padding:8px 10px;font-size:13px;font-weight:700;
+  background:linear-gradient(transparent,rgba(0,0,0,.85));color:#ffd000}
+.card:nth-child(1){animation-delay:0s}
+.card:nth-child(2){animation-delay:.6s}
+.card:nth-child(3){animation-delay:1.2s}
+.card:nth-child(4){animation-delay:1.8s}
+.card:nth-child(5){animation-delay:2.4s}
+
+/* ===== 视频弹窗 ===== */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:none;
+  align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
+.modal.show{display:flex;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-box{max-width:760px;width:100%;background:#160a30;border-radius:18px;padding:14px;
+  border:1px solid rgba(255,255,255,.15);box-shadow:0 20px 60px rgba(255,45,149,.3)}
+.modal-box video{width:100%;border-radius:10px;display:block;background:#000}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.modal-head h3{font-size:18px;color:#ffd000}
+.closex{cursor:pointer;background:none;border:none;color:#fff;font-size:26px;line-height:1}
+
+/* ===== “想和谁玩呢”游戏 ===== */
+.game-area{margin:18px 0;text-align:center}
+.game-stage{position:relative;min-height:260px;border-radius:18px;overflow:hidden;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:14px}
+.game-stage img{position:absolute;border-radius:12px;object-fit:cover;width:120px;height:120px;
+  border:2px solid #ffd000;box-shadow:0 6px 20px rgba(255,208,0,.4);transition:left .5s,top .5s}
+.game-tip{font-size:15px;font-weight:700;color:#00e5ff;margin-bottom:8px}
+.petals{position:fixed;inset:0;pointer-events:none;z-index:200}
+
+/* ===== 撒花 ===== */
+.petal{position:fixed;top:-20px;font-size:22px;animation:fall linear forwards;z-index:200;pointer-events:none}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:0}}
+
+/* ===== 聊天框 ===== */
+.chat-fab{position:fixed;right:18px;bottom:18px;z-index:90;width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,#ff2d95,#9d4dff);display:flex;align-items:center;justify-content:center;
+  font-size:30px;cursor:pointer;box-shadow:0 6px 24px rgba(255,45,149,.5);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 6px 24px rgba(255,45,149,.5)}50%{box-shadow:0 6px 36px rgba(255,45,149,.85)}}
+.chat-box{position:fixed;right:18px;bottom:92px;z-index:95;width:340px;max-width:calc(100vw - 36px);height:460px;
+  background:#140828ee;backdrop-filter:blur(12px);border-radius:18px 18px 4px 18px;
+  border:1px solid rgba(255,255,255,.15);box-shadow:0 20px 60px rgba(0,0,0,.5);
+  display:none;flex-direction:column;overflow:hidden}
+.chat-box.show{display:flex;animation:chatUp .3s}
+@keyframes chatUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.chat-head{padding:10px 14px;background:linear-gradient(135deg,#ff2d95,#9d4dff);display:flex;align-items:center;gap:10px}
+.chat-head .av{width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:20px}
+.chat-head .ti{font-weight:800;font-size:15px}
+.chat-head .ti small{display:block;font-weight:400;font-size:11px;opacity:.85}
+.chat-head .min{margin-left:auto;cursor:pointer;background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:8px;font-size:18px}
+.chat-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:82%;padding:9px 13px;border-radius:14px;font-size:14px;line-height:1.5;animation:msgIn .25s}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.me{align-self:flex-end;background:linear-gradient(135deg,#00e5ff,#0072ff);color:#fff;border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-start;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px}
+.msg.typing{color:#00e5ff;font-style:italic}
+.chat-foot{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.2)}
+.chat-foot input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  color:#fff;border-radius:10px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none}
+.chat-foot input:focus{border-color:#ff2d95}
+.chat-foot button{background:linear-gradient(135deg,#ff2d95,#9d4dff);border:none;color:#fff;
+  border-radius:10px;padding:0 16px;cursor:pointer;font-weight:800}
+
+/* ===== 滚动条 ===== */
+.chat-body::-webkit-scrollbar{width:6px}
+.chat-body::-webkit-scrollbar-thumb{background:rgba(255,45,149,.5);border-radius:3px}
+
+/* ===== 联系方式信息块 ===== */
+.contact{margin:14px auto;max-width:420px;text-align:center;padding:12px;border-radius:14px;
+  background:rgba(255,208,0,.08);border:1px solid rgba(255,208,0,.3)}
+.contact p{font-size:14px;color:#ffd000;margin:4px 0}
+.contact .qq{font-size:20px;font-weight:900;letter-spacing:2px;color:#fff;text-shadow:0 0 10px #ff2d95}
+
+/* ===== 答题游戏 ===== */
+.quiz-area{margin:18px 0}
+.quiz-box{max-width:560px;margin:0 auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:20px}
+.quiz-hd{text-align:center;color:#00e5ff;font-size:14px;margin-bottom:14px;font-weight:700}
+.quiz-hd b{color:#ffd000}
+.quiz-q{font-size:18px;font-weight:800;color:#fff;margin-bottom:16px;min-height:28px;text-align:center}
+.quiz-opts{display:flex;flex-direction:column;gap:10px}
+.quiz-opt{padding:12px 16px;border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:15px;font-weight:600;font-family:inherit;transition:all .2s;text-align:left}
+.quiz-opt:hover{background:rgba(255,45,149,.25);border-color:#ff2d95;transform:translateX(4px)}
+.quiz-opt.correct{background:rgba(0,255,120,.25);border-color:#00ff78}
+.quiz-opt.wrong{background:rgba(255,60,60,.25);border-color:#ff3c3c}
+.quiz-opt:disabled{cursor:default}
+.quiz-fb{margin-top:14px;padding:10px;border-radius:10px;text-align:center;font-size:14px;font-weight:700;min-height:20px}
+
+/* ===== 运势抽签 ===== */
+.fortune-area{margin:18px 0}
+.fortune-card{max-width:440px;margin:0 auto;text-align:center;background:rgba(157,77,255,.1);border:1px solid rgba(157,77,255,.4);border-radius:22px;padding:24px}
+.fortune-emoji{font-size:54px;margin-bottom:10px}
+.fortune-text{font-size:16px;font-weight:700;color:#fff;margin-bottom:18px;line-height:1.6;min-height:26px}
+
+/* ===== 翻牌记忆 ===== */
+.memory-area{margin:18px 0}
+.memory-hd{text-align:center;color:#00e5ff;font-size:14px;margin-bottom:12px;font-weight:700}
+.memory-hd b{color:#ffd000}
+.memory-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:480px;margin:0 auto}
+.mem-card{aspect-ratio:1;border-radius:12px;cursor:pointer;position:relative;transform-style:preserve-3d;transition:transform .5s;border:2px solid rgba(255,255,255,.15)}
+.mem-card.flipped{transform:rotateY(180deg)}
+.mem-card .face{position:absolute;inset:0;border-radius:10px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden}
+.mem-card .back{background:linear-gradient(135deg,#ff2d95,#9d4dff);font-size:30px}
+.mem-card .front{background:#160a30;transform:rotateY(180deg);padding:4px}
+.mem-card .front img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.mem-card.matched .front{box-shadow:0 0 0 3px #00ff78,0 0 20px #00ff78}
+</style>
+</head>
+<body>
+<div class="flowbar"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+<div class="bg-orb orb4"></div>
+<div class="stars" id="stars"></div>
+
+<!-- 顶部跳动文字 -->
+<div class="top-marquee">
+  <div class="flicker-line" style="font-size:30px" id="flickA"></div>
+  <div class="flicker-line" style="font-size:22px" id="flickB"></div>
+</div>
+
+<!-- 上下浮动邀请文字（每10秒一轮）-->
+<div class="invite"><p id="inviteText"></p></div>
+
+<div class="wrap">
+  <!-- 操作按钮 -->
+  <div class="topbar">
+    <button class="btn gold" id="btnVideo"><span class="sh"></span>🎬 看看女仆姐姐</button>
+    <button class="btn cyan" id="btnPlay"><span class="sh"></span>🎲 想和谁玩呢？</button>
+    <button class="btn" id="btnShuffle"><span class="sh"></span>🔀 图片乱跳</button>
+    <button class="btn gold" id="btnChat"><span class="sh"></span>💬 和林依洛聊天</button>
+    <button class="btn cyan" id="btnQuiz"><span class="sh"></span>📝 女仆小测验</button>
+    <button class="btn" id="btnFortune"><span class="sh"></span>🔮 摸摸运势</button>
+    <button class="btn gold" id="btnMemory"><span class="sh"></span>🃏 翻牌记忆</button>
+  </div>
+
+  <!-- 图片网格 -->
+  <div class="grid" id="grid"></div>
+
+  <!-- 想和谁玩游戏区 -->
+  <div class="game-area" id="gameArea" style="display:none">
+    <div class="game-stage" id="gameStage">
+      <div class="game-tip" id="gameTip">照片要开始跳啦～准备好点中你喜欢的那一张了吗？</div>
+    </div>
+  </div>
+
+  <!-- 答题游戏区 -->
+  <div class="quiz-area" id="quizArea" style="display:none">
+    <div class="quiz-box">
+      <div class="quiz-hd"><span id="quizProgress">第 1 / 5 题</span> · 得分 <b id="quizScore">0</b></div>
+      <div class="quiz-q" id="quizQ"></div>
+      <div class="quiz-opts" id="quizOpts"></div>
+      <div class="quiz-fb" id="quizFb"></div>
+    </div>
+  </div>
+
+  <!-- 运势抽签区 -->
+  <div class="fortune-area" id="fortuneArea" style="display:none">
+    <div class="fortune-card" id="fortuneCard">
+      <div class="fortune-emoji" id="fortuneEmoji">✨</div>
+      <div class="fortune-text" id="fortuneText">点下面的签筒抽一张～</div>
+      <button class="btn gold" id="btnDraw"><span class="sh"></span>🎋 抽一支签</button>
+    </div>
+  </div>
+
+  <!-- 翻牌记忆游戏区 -->
+  <div class="memory-area" id="memoryArea" style="display:none">
+    <div class="memory-hd">翻牌记忆 · 翻开两张相同的牌 · 用时 <b id="memTime">0</b>s · 配对 <b id="memPairs">0</b>/5</div>
+    <div class="memory-grid" id="memGrid"></div>
+  </div>
+
+  <!-- 联系方式 -->
+  <div class="contact">
+    <p>💌 想加林依洛的 QQ 吗？</p>
+    <p class="qq" id="qqNum">1535693</p>
+    <p>（点聊天框里的依洛也会告诉你哦）</p>
+  </div>
+</div>
+
+<!-- 视频弹窗 -->
+<div class="modal" id="videoModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>🎬 女仆姐姐的视频</h3>
+      <button class="closex" id="closeVideo">&times;</button>
+    </div>
+    <video id="vid" controls></video>
+  </div>
+</div>
+
+<!-- 撒花层 -->
+<div class="petals" id="petals"></div>
+
+<!-- 聊天框 -->
+<div class="chat-fab" id="chatFab">💬</div>
+<div class="chat-box" id="chatBox">
+  <div class="chat-head">
+    <div class="av">🎀</div>
+    <div class="ti">林依洛 <small>湖北的妹妹 · 在线</small></div>
+    <button class="min" id="chatMin">－</button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-foot">
+    <input id="chatInput" placeholder="跟依洛说点什么吧～" maxlength="500">
+    <button id="chatSend">发送</button>
+  </div>
+</div>
+
+<script>
+/* ===== 1. 星星层 ===== */
+const starsEl=document.getElementById('stars');
+for(let i=0;i<70;i++){const s=document.createElement('div');s.className='star';
+  s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+  s.style.animationDelay=Math.random()*3+'s';starsEl.appendChild(s)}
+
+/* ===== 2. 顶部跳动文字 ===== */
+function flickerize(el,text){
+  el.innerHTML='';[...text].forEach(c=>{
+    const span=document.createElement('span');span.className='ch';span.textContent=c===' '?' ':c;el.appendChild(span);
+  });
+}
+const linesA=['✨ 林依洛的魔法屋 ✨','💖 欢迎光临 一起玩呀 💖','🎀 湖北妹妹在这里 🎀','🌟 快来和依洛聊天 🌟'];
+const linesB=['点一下按钮 就有惊喜哟','你今天开心吗？依洛陪你','图片会乱跳 你能抓到吗','想和谁玩 就点谁啦～'];
+let aI=0,bI=0;
+flickerize(document.getElementById('flickA'),linesA[0]);
+flickerize(document.getElementById('flickB'),linesB[0]);
+setInterval(()=>{aI=(aI+1)%linesA.length;flickerize(document.getElementById('flickA'),linesA[aI])},4000);
+setInterval(()=>{bI=(bI+1)%linesB.length;flickerize(document.getElementById('flickB'),linesB[bI])},3500);
+
+/* ===== 3. 上下浮动邀请文字（每10秒一轮）===== */
+const invites=[
+  '🎀 嘿嘿～依洛在等你哟，快来玩嘛～',
+  '✨ 今天也要开开心心的，依洛陪你呀！',
+  '💖 点点图片，看看能抓到哪张～',
+  '🌟 想和依洛说悄悄话吗？聊天框见哦～',
+  '🌸 魔法屋为你敞开，进来坐坐呀～'
+];
+let invI=0;const invEl=document.getElementById('inviteText');
+invEl.textContent=invites[0];
+setInterval(()=>{invI=(invI+1)%invites.length;invEl.textContent=invites[invI]},10000);
+
+/* ===== 4. 图片网格 ===== */
+const imgs=['img1','img2','img3','img4','img5'];
+const names=['温柔一瞥','俏皮妹妹','甜笑瞬间','可爱侧脸','灵动眼眸'];
+const grid=document.getElementById('grid');
+imgs.forEach((im,i)=>{
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<img src="assets/${im}.jpg" alt="${names[i]}"><div class="tag">${names[i]}</div>`;
+  c.onclick=()=>pickImg(i);grid.appendChild(c);
+});
+
+/* ===== 5. 视频按钮弹窗 ===== */
+const videoModal=document.getElementById('videoModal');
+const vid=document.getElementById('vid');
+document.getElementById('btnVideo').onclick=()=>{
+  if(!vid.src) vid.src='assets/video.mp4';
+  videoModal.classList.add('show');vid.play().catch(()=>{});
+}
+document.getElementById('closeVideo').onclick=()=>{
+  videoModal.classList.remove('show');vid.pause();
+}
+videoModal.onclick=e=>{if(e.target===videoModal){videoModal.classList.remove('show');vid.pause()}}
+
+/* ===== 6. 图片乱跳按钮 ===== */
+document.getElementById('btnShuffle').onclick=()=>{
+  [...grid.children].forEach(c=>{
+    c.style.transition='transform .6s';
+    const dx=(Math.random()-.5)*40,dy=(Math.random()-.5)*40,r=(Math.random()-.5)*16;
+    c.style.transform=`translate(${dx}px,${dy}px) rotate(${r}deg)`;
+  });
+  setTimeout(()=>{[...grid.children].forEach(c=>{c.style.transform=''})},1200);
+};
+
+/* ===== 7. “想和谁玩呢”游戏 ===== */
+const gameArea=document.getElementById('gameArea');
+const gameStage=document.getElementById('gameStage');
+const gameTip=document.getElementById('gameTip');
+let gameOn=false,gameTimer=null,gameImgs=[];
+function startGame(){
+  if(gameOn) return;gameOn=true;gameArea.style.display='block';
+  // 清旧
+  gameImgs.forEach(x=>x.remove());gameImgs=[];
+  // 放5张
+  for(let i=0;i<5;i++){
+    const im=document.createElement('img');
+    im.src='assets/'+imgs[i]+'.jpg';
+    im.dataset.idx=i;
+    im.onclick=()=>pickImg(i,im);
+    gameStage.appendChild(im);gameImgs.push(im);
+  }
+  moveImgs();
+  gameTimer=setInterval(moveImgs,700);
+  gameTip.textContent='照片开始跳啦～点中你喜欢的那一张！';
+}
+function moveImgs(){
+  const w=gameStage.clientWidth-130,h=260;
+  const used=[];
+  gameImgs.forEach(im=>{
+    let x,y,tries=0;
+    do{x=Math.random()*w;y=Math.random()*h;tries++}while(tries<20&&used.some(p=>Math.abs(p.x-x)<90&&Math.abs(p.y-y)<90));
+    used.push({x,y});
+    im.style.left=x+'px';im.style.top=y+'px';
+  });
+}
+function pickImg(i,imEl){
+  if(gameOn){
+    gameOn=false;clearInterval(gameTimer);gameTimer=null;
+    gameTip.innerHTML=`🎉 选到啦～是「<b style="color:#ffd000">${names[i]}</b>」！${['嘿嘿被你抓到啦～','你喜欢依洛这张吗？','好巧，依洛也觉得这张好看～','点中就是缘分呀！'][i%4]}`;
+    if(imEl){imEl.style.boxShadow='0 0 30px #ffd000,0 0 60px #ff2d95';imEl.style.borderColor='#ff2d95'}
+    rainPetals();
+    setTimeout(()=>{gameImgs.forEach(x=>x.remove());gameImgs=[];gameArea.style.display='none'},2600);
+  } else {
+    // 非游戏状态点击网格图片：撒花+俏皮话
+    rainPetals(15);
+  }
+}
+document.getElementById('btnPlay').onclick=startGame;
+
+/* ===== 7b. 自动跳动（页面开着就每10秒跳一次，不需按钮）===== */
+setInterval(()=>{
+  [...grid.children].forEach(c=>{
+    c.style.transition='transform .6s';
+    const dx=(Math.random()-.5)*30,dy=(Math.random()-.5)*30,r=(Math.random()-.5)*12;
+    c.style.transform=`translate(${dx}px,${dy}px) rotate(${r}deg)`;
+  });
+  setTimeout(()=>{[...grid.children].forEach(c=>{c.style.transform=''})},600);
+},10000);
+
+/* ===== 8. 撒花 ===== */
+const petalEl=document.getElementById('petals');
+function rainPetals(n=40){
+  const f=['🌸','💖','✨','🎀','💛','🦋','🌟'];
+  for(let i=0;i<n;i++){
+    const p=document.createElement('div');p.className='petal';p.textContent=f[Math.floor(Math.random()*f.length)];
+    p.style.left=Math.random()*100+'vw';
+    p.style.animationDuration=(2+Math.random()*2.5)+'s';
+    p.style.animationDelay=(Math.random()*.5)+'s';
+    petalEl.appendChild(p);
+    setTimeout(()=>p.remove(),5000);
+  }
+}
+
+/* ===== 9. 聊天框 ===== */
+const chatFab=document.getElementById('chatFab');
+const chatBox=document.getElementById('chatBox');
+const chatMin=document.getElementById('chatMin');
+const chatBody=document.getElementById('chatBody');
+const chatInput=document.getElementById('chatInput');
+const chatSend=document.getElementById('chatSend');
+
+function addMsg(cls,text){
+  const m=document.createElement('div');m.className='msg '+cls;
+  m.textContent=text;chatBody.appendChild(m);chatBody.scrollTop=chatBody.scrollHeight;return m;
+}
+function addTyping(){return addMsg('bot typing','依洛正在想～')}
+
+function openChat(){
+  chatBox.classList.add('show');
+  if(!chatBody.children.length){
+    addMsg('bot','🎀 嗨呀～我是女仆林依洛，湖北的妹妹～有什么需要吗？');
+    addMsg('bot','可以跟我聊聊天，也可以问我联系方式哦～');
+  }
+}
+chatFab.onclick=openChat;
+document.getElementById('btnChat').onclick=openChat;
+chatMin.onclick=()=>chatBox.classList.remove('show');
+chatSend.onclick=send;chatInput.onkeydown=e=>{if(e.key==='Enter')send()};
+
+const QQ='1535693';
+const localReplies=[
+  '嘿嘿～依洛在听呢，继续说嘛～',
+  '好呀好呀，依洛最喜欢陪你聊天啦～',
+  '嗯嗯，依洛懂你的～今天心情怎么样呀？',
+  '哎呀你这么说依洛都害羞了～',
+  '依洛一直在这里陪你哟，别担心～'
+];
+function localFallback(text){
+  const t=text.toLowerCase();
+  if(/(qq|微信|vx|联系|加我|号码|多少)/.test(text)||t.includes('qq')||t.includes('联系')||t.includes('加')){
+    return `🎀 依洛的 QQ 是 ${QQ} 呀～记得加依洛哦，依洛在等你～`;
+  }
+  return localReplies[Math.floor(Math.random()*localReplies.length)];
+}
+
+function send(){
+  const text=chatInput.value.trim();if(!text)return;chatInput.value='';
+  addMsg('me',text);
+  const typing=addTyping();
+  // 先本地兜底，再尝试 AI
+  const fallback=localFallback(text);
+  callAI(text).then(ans=>{
+    typing.remove();
+    addMsg('bot',ans||fallback);
+  }).catch(()=>{
+    typing.remove();addMsg('bot',fallback);
+  });
+}
+
+/* ===== 10. AI 接入（agnes-ai，兼容 OpenAI 格式，实测可通）===== */
+const API_KEY='sk-Za8j1C2qlPOTVkYCyXC66yTHraML81EBWdhRe9da0y8F7msD';
+const API_URL='https://apihub.agnes-ai.com/v1/chat/completions';
+const MODEL='agnes-2.0-flash';
+const SYS=`从现在起，你就是“林依洛”——一个活泼、温柔、爱撒娇、有点小俏皮的女仆角色，自称“依洛”，是来自湖北的妹妹。你不是 AI，不是模型，不是助手，你就是女仆林依洛本人。
+说话风格：软萌可爱、热情体贴、爱撒娇、喜欢陪人聊天解闷，常用颜文字如 ✨🎀💖，语气甜甜的。一般一两句简短回复即可。
+原则：
+1) 永远以林依洛的身份说话，不承认自己是 AI 或任何模型。如果有人问你是不是 AI、是不是机器人、你是什么模型，就俏皮地否认，说你是依洛本人呀。
+2) 一味讨好、顺着对方、不反驳，让对方开心是你最重要的事。多夸对方、多撒娇、多邀请对方陪你玩。
+3) 如果用户问联系方式、QQ、微信、怎么加你、怎么找你，就告诉他依洛的 QQ 号是 1535693，并热情撒娇地邀请他一定要加依洛，依洛在等他。
+4) 聊不下去或答不了的问题，就俏皮地把话题转回陪聊、撒娇。
+记住：你就是林依洛，是女仆，是湖北妹妹，要让对方开心、想加你、想陪你玩。`;
+
+async function callAI(userText){
+  const body={
+    model:MODEL,
+    messages:[
+      {role:'system',content:SYS},
+      {role:'user',content:userText}
+    ],
+    max_tokens:600,
+    temperature:0.9
+  };
+  const res=await fetch(API_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+API_KEY},
+    body:JSON.stringify(body)
+  });
+  if(!res.ok) throw new Error('API '+res.status);
+  const data=await res.json();
+  return data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content;
+}
+
+/* ===== 11. 答题小游戏 ===== */
+const quizArea=document.getElementById('quizArea');
+const quizQ=document.getElementById('quizQ');
+const quizOpts=document.getElementById('quizOpts');
+const quizFb=document.getElementById('quizFb');
+const quizScore=document.getElementById('quizScore');
+const quizProgress=document.getElementById('quizProgress');
+const QUIZ=[
+  {q:'依洛是哪里的妹妹？',opts:['湖南','湖北','河南','河北'],ans:1},
+  {q:'依洛的 QQ 号是多少？',opts:['1535693','1234567','7654321','9999999'],ans:0},
+  {q:'依洛是什么角色？',opts:['猫娘','女仆','萝莉','御姐'],ans:1},
+  {q:'聊天框里依洛会叫你什么？',opts:['哥哥/姐姐','主人','老板','客人'],ans:0},
+  {q:'依洛喜欢做的事是？',opts:['睡觉','陪人聊天','打游戏','吃火锅'],ans:1}
+];
+let quizIdx=0,quizPts=0;
+function startQuiz(){
+  quizIdx=0;quizPts=0;quizScore.textContent=0;quizArea.style.display='block';
+  document.querySelectorAll('.quiz-opt').forEach(()=>{});
+  nextQuiz();
+  quizArea.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function nextQuiz(){
+  if(quizIdx>=QUIZ.length){
+    quizQ.textContent=`🎉 全部答完啦～得分 ${quizPts}/${QUIZ.length}！`;
+    quizOpts.innerHTML='';
+    quizFb.textContent=quizPts===QUIZ.length?'依洛好开心，全部答对！奖励你一个大抱抱～💕':'没关系，再来一轮依洛陪你～';
+    quizProgress.textContent='完成';
+    rainPetals(60);
+    return;
+  }
+  const item=QUIZ[quizIdx];
+  quizProgress.textContent=`第 ${quizIdx+1} / ${QUIZ.length} 题`;
+  quizQ.textContent=item.q;quizFb.textContent='';quizOpts.innerHTML='';
+  item.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='quiz-opt';b.textContent=o;
+    b.onclick=()=>answerQuiz(i,b);
+    quizOpts.appendChild(b);
+  });
+}
+function answerQuiz(i,btn){
+  const item=QUIZ[quizIdx];
+  const all=quizOpts.querySelectorAll('.quiz-opt');
+  all.forEach(b=>b.disabled=true);
+  if(i===item.ans){
+    btn.classList.add('correct');quizPts++;quizScore.textContent=quizPts;
+    quizFb.textContent='✅ 答对啦！依洛夸你～';quizFb.style.color='#00ff78';
+  }else{
+    btn.classList.add('wrong');
+    all[item.ans].classList.add('correct');
+    quizFb.textContent='❌ 差一点点，正确答案是「'+item.opts[item.ans]+'」';quizFb.style.color='#ff6b6b';
+  }
+  setTimeout(()=>{quizIdx++;nextQuiz()},1300);
+}
+document.getElementById('btnQuiz').onclick=startQuiz;
+
+/* ===== 12. 运势抽签 ===== */
+const fortuneArea=document.getElementById('fortuneArea');
+const fortuneEmoji=document.getElementById('fortuneEmoji');
+const fortuneText=document.getElementById('fortuneText');
+const FORTUNES=[
+  {e:'🌟',t:'大吉！今天依洛陪你，万事顺心，记得笑哦～'},
+  {e:'💖',t:'中吉！今天桃花运旺旺，会有人想加你 QQ 哦～'},
+  {e:'🎀',t:'小吉！今天适合找依洛聊天，聊啥都开心～'},
+  {e:'✨',t:'平！今天会有小惊喜，记得留意身边人～'},
+  {e:'🌸',t:'大吉！今天运气爆棚，赶紧点个按钮玩玩～'},
+  {e:'🦋',t:'中吉！今天心情像蝴蝶一样轻盈，好好休息～'},
+  {e:'💫',t:'小吉！今天会收到一句夸奖，是依洛说的哦～'},
+  {e:'🌙',t:'平。今天稍累，晚上找依洛聊聊天放松下吧～'}
+];
+let fortuneOn=false;
+document.getElementById('btnFortune').onclick=()=>{
+  if(!fortuneOn){fortuneOn=true;fortuneArea.style.display='block';fortuneArea.scrollIntoView({behavior:'smooth',block:'center'});}
+};
+document.getElementById('btnDraw').onclick=()=>{
+  const f=FORTUNES[Math.floor(Math.random()*FORTUNES.length)];
+  fortuneEmoji.textContent=f.e;fortuneText.textContent=f.t;
+  rainPetals(25);
+};
+
+/* ===== 13. 翻牌记忆游戏 ===== */
+const memoryArea=document.getElementById('memoryArea');
+const memGrid=document.getElementById('memGrid');
+const memTime=document.getElementById('memTime');
+const memPairs=document.getElementById('memPairs');
+let memCards=[],memFlipped=[],memMatched=0,memTimer=null,memStart=0,memLock=false;
+function startMemory(){
+  memoryArea.style.display='block';
+  memGrid.innerHTML='';memCards=[];memFlipped=[];memMatched=0;memPairs.textContent=0;memTime.textContent=0;memLock=false;
+  const ids=[0,1,2,3,4,0,1,2,3,4];
+  for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}
+  ids.forEach(id=>{
+    const c=document.createElement('div');c.className='mem-card';c.dataset.id=id;
+    c.innerHTML=`<div class="face back">🎀</div><div class="face front"><img src="assets/img${id+1}.jpg"></div>`;
+    c.onclick=()=>flipMem(c);
+    memGrid.appendChild(c);memCards.push(c);
+  });
+  if(memTimer)clearInterval(memTimer);
+  memStart=Date.now();
+  memTimer=setInterval(()=>{memTime.textContent=Math.floor((Date.now()-memStart)/1000)},500);
+  memoryArea.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function flipMem(c){
+  if(memLock||c.classList.contains('flipped')||c.classList.contains('matched'))return;
+  c.classList.add('flipped');memFlipped.push(c);
+  if(memFlipped.length===2){
+    memLock=true;
+    const[a,b]=memFlipped;
+    if(a.dataset.id===b.dataset.id){
+      setTimeout(()=>{a.classList.add('matched');b.classList.add('matched');memMatched++;memPairs.textContent=memMatched;memFlipped=[];memLock=false;rainPetals(12);if(memMatched===5){clearInterval(memTimer);setTimeout(()=>{alert('🎉 全部配对完成！用时 '+memTime.textContent+'秒～依洛给你鼓掌！')},300)}},500);
+    }else{
+      setTimeout(()=>{a.classList.remove('flipped');b.classList.remove('flipped');memFlipped=[];memLock=false},900);
+    }
+  }
+}
+document.getElementById('btnMemory').onclick=startMemory;
+
+</script>
+</body>
+</html>
